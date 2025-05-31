@@ -1,0 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Appointment {
+  AppointmentID           Int      @id @default(autoincrement())
+  PatientID               Int      // External FK: ID from Patient Management Service
+  PrimaryDoctorID         Int      // External FK: ID from Clinic & Provider Management Service
+  ScheduledDateTime       DateTime
+  EstimatedDurationMinutes Int?
+  AppointmentPurpose      String?
+  Status                  String   // e.g., "Scheduled", "Confirmed", "Completed", "Cancelled", "NoShow"
+  Notes                   String?
+  CreationDateTime        DateTime @default(now())
+  LastUpdateDateTime      DateTime @updatedAt
+
+  performedActions        PerformedAction[] // Relation to PerformedAction model
+}
+
+model PerformedAction {
+  PerformedActionID       Int      @id @default(autoincrement())
+  AppointmentID           Int      // Foreign key to local Appointment table
+  appointment             Appointment @relation(fields: [AppointmentID], references: [AppointmentID], onDelete: Cascade) // Important: onDelete Cascade
+
+  ProcedureTypeID         Int      // External FK: ID from Clinic & Provider Management Service
+  PerformingDoctorID      Int      // External FK: ID from Clinic & Provider Management Service
+
+  ActionDateTime          DateTime @default(now())
+  ToothInvolved           String?
+  SurfacesInvolved        String?
+  AnesthesiaUsed          String?
+  Description_Notes       String?  // Clinical notes for this specific action
+  Quantity                Int      @default(1)
+  UnitPrice               Float    // Or Decimal if your DB and needs are specific
+  TotalPrice              Float    // Calculated: Quantity * UnitPrice
+
+  // No direct createdAt/updatedAt as it's often logged once
+}
