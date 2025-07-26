@@ -18,6 +18,11 @@ export default async function appointmentRoutes(fastify: FastifyInstance, option
     reply.send(appointments);
   });
 
+  fastify.get('/me', { schema: { response: { 200: S.array().items(S.ref('Appointment#')) } } }, async (request, reply) => {
+    const appointments = await appointmentsService.findAll();
+    reply.send(appointments);
+  });
+
   fastify.get('/:appointmentId', { schema: { params: paramsSchema, response: { 200: { $ref: 'Appointment#' } } } }, async (request, reply) => {
     const { appointmentId } = request.params as { appointmentId: number };
     const appointment = await appointmentsService.findOne(appointmentId);
