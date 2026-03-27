@@ -19,6 +19,7 @@ export default async function appointmentRoutes(fastify: FastifyInstance, option
   });
 
   fastify.get('/me', { schema: { response: { 200: S.array().items(S.ref('Appointment#')) } } }, async (request, reply) => {
+    console.log(request)
     const appointments = await appointmentsService.findAll();
     reply.send(appointments);
   });

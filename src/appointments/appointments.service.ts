@@ -13,6 +13,10 @@ export class AppointmentsService {
     return this.prisma.appointment.findMany({ include: { performedActions: true } });
   }
 
+  async findByPatientId(PatientID: number): Promise<Appointment[]> {
+    return this.prisma.appointment.findMany({ where: PatientID ? { PatientID } : undefined, include: { performedActions: true } });
+  }
+
   async findOne(appointmentId: number): Promise<Appointment | null> {
     const appointment = await this.prisma.appointment.findUnique({
       where: { AppointmentID: appointmentId },
