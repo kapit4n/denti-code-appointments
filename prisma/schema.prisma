@@ -14,7 +14,7 @@ model Appointment {
   ScheduledDateTime       DateTime
   EstimatedDurationMinutes Int?
   AppointmentPurpose      String?
-  Status                  String   // e.g., "Scheduled", "Confirmed", "Completed", "Cancelled", "NoShow"
+  Status                  String   // Scheduled | Confirmed | InProgress | Completed | Cancelled | NoShow | Rescheduled
   Notes                   String?
   CreationDateTime        DateTime @default(now())
   LastUpdateDateTime      DateTime @updatedAt
@@ -34,6 +34,8 @@ model PerformedAction {
   ToothInvolved           String?
   SurfacesInvolved        String?
   AnesthesiaUsed          String?
+  /// JSON string array of facility/supply IDs from the clinical catalog (e.g. ["nitrous_oxide","latex_gloves"])
+  FacilitiesUsed          String?
   Description_Notes       String?  // Clinical notes for this specific action
   Quantity                Int      @default(1)
   UnitPrice               Float    // Or Decimal if your DB and needs are specific

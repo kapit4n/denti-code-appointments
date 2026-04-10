@@ -6,14 +6,38 @@ export const createAppointmentSchema = S.object()
   .prop('ScheduledDateTime', S.string().format(S.FORMATS.DATE_TIME).required())
   .prop('EstimatedDurationMinutes', S.integer().minimum(1))
   .prop('AppointmentPurpose', S.string().maxLength(255))
-  .prop('Status', S.string().enum(['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'NoShow']).required())
+  .prop(
+    'Status',
+    S.string()
+      .enum([
+        'Scheduled',
+        'Confirmed',
+        'InProgress',
+        'Completed',
+        'Cancelled',
+        'NoShow',
+        'Rescheduled',
+      ])
+      .required(),
+  )
   .prop('Notes', S.string());
 
 export const updateAppointmentSchema = S.object()
   .prop('ScheduledDateTime', S.string().format(S.FORMATS.DATE_TIME))
   .prop('EstimatedDurationMinutes', S.integer().minimum(1))
   .prop('AppointmentPurpose', S.string().maxLength(255))
-  .prop('Status', S.string().enum(['Scheduled', 'Confirmed', 'Completed', 'Cancelled', 'NoShow']))
+  .prop(
+    'Status',
+    S.string().enum([
+      'Scheduled',
+      'Confirmed',
+      'InProgress',
+      'Completed',
+      'Cancelled',
+      'NoShow',
+      'Rescheduled',
+    ]),
+  )
   .prop('Notes', S.string());
 
 export const paramsSchema = S.object().prop('appointmentId', S.integer().required());

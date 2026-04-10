@@ -6,6 +6,8 @@ export interface CreatePerformedActionData {
   ToothInvolved?: string;
   SurfacesInvolved?: string;
   AnesthesiaUsed?: string;
+  /** Catalog IDs stored as JSON array in the database */
+  FacilitiesUsed?: string[];
   Description_Notes?: string;
   Quantity: number;
   UnitPrice: number;
@@ -17,6 +19,7 @@ export interface UpdatePerformedActionData {
   ToothInvolved?: string;
   SurfacesInvolved?: string;
   AnesthesiaUsed?: string;
+  FacilitiesUsed?: string[];
   Description_Notes?: string;
   Quantity?: number;
   UnitPrice?: number;
@@ -40,9 +43,14 @@ export class PerformedActionsService {
 
     const totalPrice = this.calculateTotalPrice(data.Quantity, data.UnitPrice);
 
+    const { FacilitiesUsed, ...rest } = data;
+    const facilitiesJson =
+      FacilitiesUsed && FacilitiesUsed.length > 0 ? JSON.stringify(FacilitiesUsed) : undefined;
+
     const actionToCreate: Prisma.PerformedActionUncheckedCreateInput = {
       AppointmentID: appointmentId,
-      ...data,
+      ...rest,
+      FacilitiesUsed: facilitiesJson,
       TotalPrice: totalPrice,
     };
 
@@ -85,7 +93,13 @@ export class PerformedActionsService {
         throw err;
     }
 
-    const dataToUpdate: Prisma.PerformedActionUpdateInput = { ...data };
+    const { FacilitiesUsed, ...rest } = data;
+    const dataToUpdate: Prisma.PerformedActionUpdateInput = { ...rest };
+
+    if (FacilitiesUsed !== undefined) {
+      dataToUpdate.FacilitiesUsed =
+        FacilitiesUsed.length > 0 ? JSON.stringify(FacilitiesUsed) : null;
+    }
 
     const quantity = data.Quantity !== undefined ? data.Quantity : existingAction.Quantity;
     const unitPrice = data.UnitPrice !== undefined ? data.UnitPrice : existingAction.UnitPrice;

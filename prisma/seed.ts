@@ -34,6 +34,18 @@ async function main() {
         Quantity: 1,
         UnitPrice: 120,
         TotalPrice: 120,
+        AnesthesiaUsed: 'Topical benzocaine 20% gel',
+        SurfacesInvolved: 'All surfaces — full mouth',
+        FacilitiesUsed: JSON.stringify([
+          'ultrasonic_scaler',
+          'prophy_angle',
+          'fluoride_varnish',
+          'high_volume_evacuation',
+          'nitrile_gloves',
+          'surgical_mask',
+          'patient_bib',
+          'suction_tips',
+        ]),
         Description_Notes: 'Routine cleaning completed.',
       },
       {
@@ -43,6 +55,14 @@ async function main() {
         Quantity: 1,
         UnitPrice: 50,
         TotalPrice: 50,
+        AnesthesiaUsed: null,
+        SurfacesInvolved: null,
+        FacilitiesUsed: JSON.stringify([
+          'lead_apron_thyroid_collar',
+          'digital_sensor',
+          'nitrile_gloves',
+          'patient_bib',
+        ]),
         Description_Notes: 'X-rays show no new cavities.',
       },
     ],
@@ -65,6 +85,16 @@ async function main() {
       ProcedureTypeID: 1, // Comprehensive Oral Evaluation
       PerformingDoctorID: 1,
       ToothInvolved: '14',
+      SurfacesInvolved: 'MOD',
+      AnesthesiaUsed: 'None required — evaluation only',
+      FacilitiesUsed: JSON.stringify([
+        'mouth_mirror',
+        'explorer_probe',
+        'periodontal_probe',
+        'latex_gloves',
+        'surgical_mask',
+        'patient_bib',
+      ]),
       Quantity: 1,
       UnitPrice: 100,
       TotalPrice: 100,
@@ -91,7 +121,8 @@ async function main() {
       PrimaryDoctorID: 3, // Bruce Banner
       ScheduledDateTime: new Date('2025-08-12T09:00:00.000Z'), // August 12, 2025
       AppointmentPurpose: 'Orthodontic Consultation',
-      Status: 'Scheduled',
+      Status: 'InProgress',
+      Notes: 'Patient arrived; consultation underway.',
     },
   });
 

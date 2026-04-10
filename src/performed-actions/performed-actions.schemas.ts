@@ -9,7 +9,14 @@ export const createPerformedActionSchema = S.object()
   .prop('PerformingDoctorID', S.integer().required().description('External Doctor ID performing the action'))
   .prop('ToothInvolved', S.string().maxLength(50).description('e.g., "16", "UL Quadrant"'))
   .prop('SurfacesInvolved', S.string().maxLength(50).description('e.g., "MOD", "Occlusal"'))
-  .prop('AnesthesiaUsed', S.string().maxLength(100).description('Type and amount of anesthesia'))
+  .prop('AnesthesiaUsed', S.string().maxLength(200).description('Type and amount of anesthesia'))
+  .prop(
+    'FacilitiesUsed',
+    S.array()
+      .items(S.string().maxLength(80))
+      .maxItems(64)
+      .description('IDs of materials, equipment, and facilities used (clinical catalog)'),
+  )
   .prop('Description_Notes', S.string().description('Clinical notes for this action'))
   .prop('Quantity', S.integer().minimum(1).default(1).required())
   .prop('UnitPrice', S.number().minimum(0).required().description('Price for one unit of this procedure'));
@@ -20,7 +27,11 @@ export const updatePerformedActionSchema = S.object()
   .prop('PerformingDoctorID', S.integer().description('External Doctor ID performing the action'))
   .prop('ToothInvolved', S.string().maxLength(50).description('e.g., "16", "UL Quadrant"'))
   .prop('SurfacesInvolved', S.string().maxLength(50).description('e.g., "MOD", "Occlusal"'))
-  .prop('AnesthesiaUsed', S.string().maxLength(100).description('Type and amount of anesthesia'))
+  .prop('AnesthesiaUsed', S.string().maxLength(200).description('Type and amount of anesthesia'))
+  .prop(
+    'FacilitiesUsed',
+    S.array().items(S.string().maxLength(80)).maxItems(64).description('Clinical catalog facility IDs'),
+  )
   .prop('Description_Notes', S.string().description('Clinical notes for this action'))
   .prop('Quantity', S.integer().minimum(1))
   .prop('UnitPrice', S.number().minimum(0).description('Price for one unit of this procedure'));
@@ -35,6 +46,7 @@ export const performedActionBaseSchema = S.object()
   .prop('ToothInvolved', S.anyOf([S.string(), S.null()]))
   .prop('SurfacesInvolved', S.anyOf([S.string(), S.null()]))
   .prop('AnesthesiaUsed', S.anyOf([S.string(), S.null()]))
+  .prop('FacilitiesUsed', S.anyOf([S.string(), S.null()]))
   .prop('Description_Notes', S.anyOf([S.string(), S.null()]))
   .prop('Quantity', S.integer())
   .prop('UnitPrice', S.number())

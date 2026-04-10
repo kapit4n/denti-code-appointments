@@ -17,7 +17,7 @@ export class AppointmentsService {
     return this.prisma.appointment.findMany({ where: PatientID ? { PatientID } : undefined, include: { performedActions: true } });
   }
 
-  async findOne(appointmentId: number): Promise<Appointment | null> {
+  async findOne(appointmentId: number): Promise<Appointment> {
     const appointment = await this.prisma.appointment.findUnique({
       where: { AppointmentID: appointmentId },
       include: { performedActions: true }

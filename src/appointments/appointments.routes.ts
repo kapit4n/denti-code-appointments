@@ -3,6 +3,12 @@ import S from 'fluent-json-schema';
 import { AppointmentsService } from './appointments.service';
 import { createAppointmentSchema, updateAppointmentSchema, paramsSchema } from './appointments.schemas';
 import { Prisma } from '@prisma/client';
+import {
+  buildPatientAppointmentUpdate,
+  isStaffRole,
+  parseRolesHeader,
+} from './patientPatchPolicy';
+import { fetchPatientIdFromPatientService } from './patientProfileClient';
 
 
 export default async function appointmentRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
@@ -19,7 +25,6 @@ export default async function appointmentRoutes(fastify: FastifyInstance, option
   });
 
   fastify.get('/me', { schema: { response: { 200: S.array().items(S.ref('Appointment#')) } } }, async (request, reply) => {
-    console.log(request)
     const appointments = await appointmentsService.findAll();
     reply.send(appointments);
   });
@@ -32,7 +37,27 @@ export default async function appointmentRoutes(fastify: FastifyInstance, option
 
   fastify.patch('/:appointmentId', { schema: { params: paramsSchema, body: updateAppointmentSchema, response: { 200: { $ref: 'Appointment#' } } } }, async (request, reply) => {
     const { appointmentId } = request.params as { appointmentId: number };
-    const appointment = await appointmentsService.update(appointmentId, request.body as Prisma.AppointmentUpdateInput);
+    const existing = await appointmentsService.findOne(appointmentId);
+    const roles = parseRolesHeader(request.headers['x-user-roles']);
+    const body = request.body as Record<string, unknown>;
+
+    let data: Prisma.AppointmentUpdateInput;
+
+    if (isStaffRole(roles)) {
+      data = body as Prisma.AppointmentUpdateInput;
+    } else {
+      const patientId = await fetchPatientIdFromPatientService(request.headers);
+      if (existing.PatientID !== patientId) {
+        const err = new Error('You do not have access to this appointment.') as Error & {
+          statusCode: number;
+        };
+        err.statusCode = 403;
+        throw err;
+      }
+      data = buildPatientAppointmentUpdate(existing, body as { Status?: string; ScheduledDateTime?: string });
+    }
+
+    const appointment = await appointmentsService.update(appointmentId, data);
     reply.send(appointment);
   });
 
